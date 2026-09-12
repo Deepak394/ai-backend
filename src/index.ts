@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { pool } from "./config/db";
 import authRoutes from "./routes/authRoutes";
+import documentRoutes from "./routes/documentRoutes";
 import { authMiddleware } from "./middlewares/authMiddleware";
 
 
@@ -35,6 +36,7 @@ app.get("/db-check", async (req, res) => {
   }
 });
 app.use("/auth", authRoutes);
+app.use("/documents", documentRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
