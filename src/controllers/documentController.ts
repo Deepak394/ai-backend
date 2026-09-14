@@ -4,9 +4,11 @@ import {
   listDocuments,
   getDocumentById,
   deleteDocument,
+  updateDocument,
 } from "../services/documentService";
-import { createDocumentSchema } from "../validation/documentValidation";
+import { createDocumentSchema, updateDocumentSchema } from "../validation/documentValidation";
 import moment from "moment/moment";
+import { success } from "zod";
 
 export async function create(req: Request, res: Response) {
   const parsed: any = createDocumentSchema.safeParse(req.body);
@@ -71,6 +73,7 @@ export async function getOne(req: Request, res: Response) {
     id: document.id,
     title: document.title,
     raw_text: document.raw_text,
+    type: document.type === "document" ? "Document" : "Note",
     created_at: moment(document.created_at).format("DD-MM-YYYY HH:mm:ss"),
   };
   res.json({ success: true, status: "success", data: formattedDocument });
@@ -101,4 +104,23 @@ export async function remove(req: Request, res: Response) {
     status: "success",
     message: "Document deleted successfully",
   });
+}
+
+export async function update(req: Request, res: Response) {
+  const parsed:any = updateDocumentSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ success: false, status:"error", message: parsed.error.issues[0].message });
+  }
+
+  const userId = (req as any).userId;
+  const documentId = Number(req.params.id);
+  if (isNaN(documentId)) {
+    return res.status(400).json({ success: true, status:"error", message: "Invalid document id" });
+  }
+
+  const updated = await updateDocument(userId, documentId, parsed.data);
+  if (!updated) {
+    return res.status(404).json({ error: "Document not found" });
+  }
+  res.json({success:true, status:"error", data: updated });
 }

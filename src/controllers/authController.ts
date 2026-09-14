@@ -15,7 +15,7 @@ export async function register(req: Request, res: Response) {
   }
 
   try {
-    const user = await registerUser(parsed.data.email, parsed.data.password);
+    const user = await registerUser(parsed.data);
     res
       .status(201)
       .json({
