@@ -8,7 +8,8 @@ import {
 } from "../services/documentService";
 import { createDocumentSchema, updateDocumentSchema } from "../validation/documentValidation";
 import moment from "moment/moment";
-import { success } from "zod";
+import { json, success } from "zod";
+import fa from "zod/v4/locales/fa.cjs";
 
 export async function create(req: Request, res: Response) {
   const parsed: any = createDocumentSchema.safeParse(req.body);
@@ -40,7 +41,9 @@ export async function create(req: Request, res: Response) {
 
 export async function list(req: Request, res: Response) {
   const userId = (req as any).userId;
-  const documents = await listDocuments(userId);
+  const type = req.query?.type as string
+  const documents = await listDocuments(userId, type);
+ 
   const documentSummaries = documents.map((doc) => ({
     id: doc.id,
     title: doc.title,

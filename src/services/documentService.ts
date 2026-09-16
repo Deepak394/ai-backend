@@ -10,11 +10,13 @@ export async function createDocument(userId: number, title: string, rawText: str
   return result.rows[0];
 }
 
-export async function listDocuments(userId: number) {
+export async function listDocuments(userId: number, type:string) {
+  
   const result = await pool.query(
-    `SELECT id, title, created_at FROM documents WHERE user_id = $1 ORDER BY created_at DESC`,
-    [userId]
+    `SELECT id, title, created_at FROM documents WHERE user_id = $1   AND ($2 = 'all' OR type = $2)   ORDER BY created_at DESC`,
+    [userId, type]
   );
+ 
   return result.rows;
 }
 
