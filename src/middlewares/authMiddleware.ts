@@ -14,7 +14,7 @@ export function authMiddleware(req: any, res: any, next: any) {
     }
     try {
         const decoded:any = jwt.verify(token, process.env.JWT_SECRET as string);
-        console.log("Decoded token:", decoded);
+       
         req.userId = decoded?.userId; // Attach the decoded user info to the request object
 
         next(); // Proceed to the next middleware or route handler

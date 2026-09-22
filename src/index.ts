@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import documentRoutes from "./routes/documentRoutes";
 import conversationRoutes from "./routes/conversationRoutes"
 import { authMiddleware } from "./middlewares/authMiddleware";
+import { errorHandler } from "./middlewares/errorHandler";
 
 
 
@@ -14,7 +15,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(errorHandler); 
 app.listen()
 
 app.get("/health", (req, res) => {

@@ -33,3 +33,12 @@ export async function listMessages(conversationId: number) {
   );
   return result.rows;
 }
+
+export async function getConversationHistory(conversationId: number) {
+  const messages = await listMessages(conversationId); // from Day 7
+  
+  return messages.map((m) => ({
+    role: m.role as "user" | "assistant",
+    content: m.content,
+  }));
+}
