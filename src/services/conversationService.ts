@@ -30,6 +30,8 @@ export async function conversationBelongsToUser(userId: number, conversationId: 
   return result.rows.length > 0;
 }
 
+
+
 export async function deleteConversation(userId: number, conversationId: number) {
   const result = await pool.query(
     `DELETE FROM conversations WHERE id = $1 AND user_id = $2 RETURNING id`,
