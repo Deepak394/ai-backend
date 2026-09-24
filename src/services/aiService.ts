@@ -100,3 +100,34 @@ export async function streamChatReply(
 
   return fullText;
 }
+
+
+export async function generateTitle(firstMessage: string): Promise<string> {
+  const response = await fetch(`${process.env.AI_BASE_URL}/chat/completions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: process.env.AI_MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Generate a short title (3-6 words) summarizing the topic of the user's message. " +
+            "Respond with ONLY the title text — no quotes, no punctuation at the end, no explanation.",
+        },
+        { role: "user", content: firstMessage },
+      ],
+      temperature: 0.3,
+      max_tokens: 20, // titles are short — cap output to keep this fast and cheap
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("TITLE_GENERATION_FAILED");
+  }
+
+  const data = await response.json();
+  const title = data.choices?.[0]?.message?.content?.trim();
+
+  return title || "New Conversation"; // graceful fallback, never leave title empty
+}

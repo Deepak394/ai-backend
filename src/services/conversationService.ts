@@ -39,3 +39,19 @@ export async function deleteConversation(userId: number, conversationId: number)
   );
   return result.rows.length > 0;
 }
+
+
+export async function updateConversationTitle(conversationId: number, title: string) {
+  await pool.query(
+    `UPDATE conversations SET title = $1, updated_at = updated_at WHERE id = $2`,
+    [title, conversationId]
+  );
+}
+
+export async function isDefaultTitle(conversationId: number): Promise<boolean> {
+  const result = await pool.query(
+    `SELECT title FROM conversations WHERE id = $1`,
+    [conversationId]
+  );
+  return result.rows[0]?.title === "New Conversation";
+}

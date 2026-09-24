@@ -4,6 +4,8 @@ import {
   listConversations,
   conversationBelongsToUser,
   deleteConversation,
+  isDefaultTitle,
+  updateConversationTitle,
 } from "../services/conversationService";
 import {
   addMessage,
@@ -14,8 +16,8 @@ import {
   createConversationSchema,
   addMessageSchema,
 } from "../validation/conversationValidation";
-import { getChatReply, streamChatReply } from "../services/aiService";
-import { success } from "zod";
+import { generateTitle, getChatReply, streamChatReply } from "../services/aiService";
+
 
 export async function create(req: Request, res: Response) {
   const parsed: any = createConversationSchema.safeParse(req.body);
@@ -249,6 +251,12 @@ export async function postMessageStream(req: Request, res: Response) {
     const assistantMessage = await addMessage(conversationId, "assistant", fullReply);
 
     res.write(`event: done\ndata: ${JSON.stringify(assistantMessage)}\n\n`);
+      const stillDefault = await isDefaultTitle(conversationId);
+  if (stillDefault) {
+    const title = await generateTitle(parsed.data.content);
+    await updateConversationTitle(conversationId, title);
+    res.write(`event: title\ndata: ${JSON.stringify({ title })}\n\n`);
+  }
   } catch (err) {
     res.write(`event: error\ndata: ${JSON.stringify({ message: "AI service unavailable" })}\n\n`);
   } finally {
